@@ -101,7 +101,33 @@ class Piece {
     canMove(toX, toY) {
         //prevent moving to the same square
         if (this.x === toX && this.y === toY) return false;
+        //board bounds
+        if (toX < 0 || toX > 7 || toY < 0 || toY > 7) return false;
 
+        //if destination is occupied by same color
+        const destPiece = pieces.find(p => p.x === toX && p.y === toY)
+        if (destPiece && destPiece.color === this.color) return false;
+
+        const dx = toX - this.x;
+        const dy = toY - this.y;
+
+        //pawn
+        if (this.type == 'pawn') {
+            //direction; if white moves up, if black moves down
+            const dir = this.color === 'white' ? -1 : 1;
+            //move forward
+            if (dx === 0 && dy === dir && !destPiece) return true;
+            //first move: 2 squares
+            if (dx === 0 && dy === 2 * dir && ((this.color === 'white' && this.y === 6) || (this.color === 'black' && this.y === 1))) {
+                //check if path is clear
+                const midY = this.y + dir;
+                if (!pieces.find(p => p.x === this.x && p.y === midY) && !destPiece) return true;
+            }
+            //capture
+            if (Math.abs(dx) === 1 && dy === dir && destPiece && destPiece.color !== this.color) return true;
+            return false;
+
+        }
 
     }
 }
@@ -152,10 +178,15 @@ function mousePressed() {
     if (selectedPiece) {
 
         if (selectedPiece.x !== x || selectedPiece.y !== y) {
-            selectedPiece.x = x;
-            selectedPiece.y = y;
+            if (selectedPiece.canMove(x, y)) {
+                pieces = pieces.filter(p => !(p.x === x && p.y === y));
+
+                selectedPiece.x = x;
+                selectedPiece.y = y;
+
+                switchTurn();
+            }
             selectedPiece = null;
-            switchTurn();
         } else {
             selectedPiece = null;
         }
