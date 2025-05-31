@@ -178,6 +178,8 @@ class Piece {
                 let cy = this.y + stepY;
                 while (cx !== toX || cy !== toY) {
                     if (pieces.find(p => p.x === cx && p.y === cy)) return false;
+                    cx += stepX;
+                    cy += stepY;
                 }
                 return true;
             }
