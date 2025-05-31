@@ -410,6 +410,24 @@ function evaluatePosition() {
     // negative score = white(player) ahead || positive score = black(bot) ahead
 }
 
+function makeMove(move) {
+    if (move.capturePiece) {
+        let index = pieces.indexOf(move.capturedPiece);
+        pieces.splice(index, 1);
+    }
+
+    move.piece.x = move.toX;
+    move.piece.y = move.toY;
+}
+
+function undoMove(move) {
+    move.piece.x = move.fromX;
+    move.piece.y = move.fromY;
+
+    if (move.capturedPiece) {
+        pieces.push(capturedPiece);
+    }
+}
 
 function resetGame() {
     initBoard();
