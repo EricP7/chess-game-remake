@@ -248,6 +248,13 @@ function simpleEngineMove() {
 
 function switchTurn() {
     currentPlayer = currentPlayer === 'white' ? 'black' : 'white';
+    if (isInCheck(currentPlayer)) {
+        if (isCheckmate(currentPlayer)) {
+            alert(currentPlayer + " is in checkmate! Game over.");
+        } else {
+            alert(currentPlayer + " is in check!");
+        }
+    }
 }
 
 function mousePressed() {
@@ -257,7 +264,10 @@ function mousePressed() {
     if (selectedPiece) {
         if (selectedPiece.x !== x || selectedPiece.y !== y) {
             if (selectedPiece.canMove(x, y)) {
-                pieces = pieces.filter(p => !(p.x === x && p.y === y));
+                const captured = pieces.find(p => p.x === x && p.y === y);
+                if (captured) {
+                    pieces.splice(pieces.indexOf(captured), 1);
+                }
                 selectedPiece.x = x;
                 selectedPiece.y = y;
                 switchTurn();
@@ -277,7 +287,18 @@ function mousePressed() {
                 for (let i = 0; i < 8; i++) {
                     for (let j = 0; j < 8; j++) {
                         if (piece.canMove(i, j)) {
-                            possibleMoves.push({ x: i, y: j });
+                            // Simulate the move
+                            const oldX = piece.x, oldY = piece.y;
+                            const captured = pieces.find(p => p.x === i && p.y === j);
+                            piece.x = i; piece.y = j;
+                            if (captured) pieces.splice(pieces.indexOf(captured), 1);
+                            const inCheck = isInCheck(currentPlayer);
+                            // Undo move
+                            piece.x = oldX; piece.y = oldY;
+                            if (captured) pieces.push(captured);
+                            if (!inCheck) {
+                                possibleMoves.push({ x: i, y: j });
+                            }
                         }
                     }
                 }
@@ -287,7 +308,48 @@ function mousePressed() {
     }
 }
 
+//find king
+function findKing(color) {
+    return pieces.find(p => p.type === 'king' && p.color === color);
+}
 
+function isSquareAttacked(x, y, byColor) {
+    return pieces.some(p => p.color === byColor && p.canMove(x, y));
+}
+
+//check if current player's king is in check
+function isInCheck(color) {
+    const king = findKing(color);
+    if (!king) return false;
+    const enemyColor = color === 'white' ? 'black' : 'white';
+    return isSquareAttacked(king.x, king.y, enemyColor);
+}
+
+function isCheckmate(color) {
+    if (!isInCheck(color)) return false;
+    // Try all possible moves for all pieces of this color
+    for (const piece of pieces.filter(p => p.color === color)) {
+        for (let toX = 0; toX < 8; toX++) {
+            for (let toY = 0; toY < 8; toY++) {
+                if (piece.canMove(toX, toY)) {
+                    // Simulate move
+                    const captured = pieces.find(p => p.x === toX && p.y === toY);
+                    const oldX = piece.x;
+                    const oldY = piece.y;
+                    piece.x = toX;
+                    piece.y = toY;
+                    if (captured) pieces.splice(pieces.indexOf(captured), 1);
+                    const stillInCheck = isInCheck(color);
+                    // Undo move
+                    piece.x = oldX; piece.y = oldY;
+                    if (captured) pieces.push(captured);
+                    if (!stillInCheck) return false;
+                }
+            }
+        }
+    }
+    return true;
+}
 
 function resetGame() {
     initBoard();
