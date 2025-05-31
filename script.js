@@ -113,7 +113,7 @@ class Piece {
     }
 
     // Add movement rules here
-    canMove(toX, toY) {
+    canMove(toX, toY, asAttack = false) {
         //prevent moving to the same square
         if (this.x === toX && this.y === toY) return false;
         //board bounds
@@ -131,15 +131,14 @@ class Piece {
             //direction; if white moves up, if black moves down
             const dir = this.color === 'white' ? -1 : 1;
             //move forward
-            if (dx === 0 && dy === dir && !destPiece) return true;
+            if (!asAttack && dx === 0 && dy === dir && !destPiece) return true;
             //first move: 2 squares
-            if (dx === 0 && dy === 2 * dir && ((this.color === 'white' && this.y === 6) || (this.color === 'black' && this.y === 1))) {
-                //check if path is clear
+            if (!asAttack && dx === 0 && dy === 2 * dir && ((this.color === 'white' && this.y === 6) || (this.color === 'black' && this.y === 1))) {
                 const midY = this.y + dir;
                 if (!pieces.find(p => p.x === this.x && p.y === midY) && !destPiece) return true;
             }
             //capture
-            if (Math.abs(dx) === 1 && dy === dir && destPiece && destPiece.color !== this.color) return true;
+            if (Math.abs(dx) === 1 && dy === dir && (destPiece || asAttack)) return true;
             return false;
         }
 
@@ -148,13 +147,13 @@ class Piece {
             if (dx === 0 || dy === 0) {
                 //check path is clear
                 let stepX = dx === 0 ? 0 : dx / Math.abs(dx);
-                let setpY = dy === 0 ? 0 : dy / Math.abs(dy);
+                let stepY = dy === 0 ? 0 : dy / Math.abs(dy);
                 let cx = this.x + stepX;
-                let cy = this.y + setpY;
+                let cy = this.y + stepY;
                 while (cx !== toX || cy !== toY) {
                     if (pieces.find(p => p.x === cx && p.y === cy)) return false;
                     cx += stepX;
-                    cy += setpY;
+                    cy += stepY;
                 }
                 return true;
             }
@@ -320,7 +319,7 @@ function findKing(color) {
 }
 
 function isSquareAttacked(x, y, byColor) {
-    return pieces.some(p => p.color === byColor && p.canMove(x, y));
+    return pieces.some(p => p.color === byColor && p.canMove(x, y, true));
 }
 
 //check if current player's king is in check
@@ -361,4 +360,6 @@ function resetGame() {
     initBoard();
     initPieces();
     currentPlayer = 'white';
+    selectedPiece = null;
+    possibleMoves = [];
 }
