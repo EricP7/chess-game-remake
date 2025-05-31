@@ -203,8 +203,14 @@ class Piece {
 
         //king
         if (this.type === 'king') {
-            if (Math.abs(dx) <= 1 && Math.abs(dy) <= 1) return true;
-            return false;
+            // Prevent king from moving into attacked squares
+            const enemyColor = this.color === 'white' ? 'black' : 'white';
+            // Temporarily move the king to the target square
+            const oldX = this.x, oldY = this.y;
+            this.x = toX; this.y = toY;
+            const attacked = isSquareAttacked(toX, toY, enemyColor);
+            this.x = oldX; this.y = oldY;
+            if (!attacked) return true;
         }
         return false;
 
