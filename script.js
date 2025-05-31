@@ -357,6 +357,33 @@ function isCheckmate(color) {
     return true;
 }
 
+//################## BOT LOGIC FUNCTIONS ##################
+
+function getAllLegalMoves(color) {
+    let moves = [];
+
+    for (let piece of pieces) {
+        if (piece.color === color) {
+            for (let x = 0; x < 8; x++) {
+                for (let x = 0; y < 8; y++) {
+                    if (piece.canMove(x,y)) {
+                        moves.push({
+                            piece: piece,
+                            fromX: piece.x,
+                            fromY: piece.y,
+                            toX: x,
+                            toY: y,
+                            capturedPiece: pieces.find(p => p.x === x && p.y === y)
+                        })
+                    }
+                }
+            }
+        }
+    }
+}
+
+
+
 function resetGame() {
     initBoard();
     initPieces();
