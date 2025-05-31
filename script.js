@@ -383,6 +383,33 @@ function getAllLegalMoves(color) {
 }
 
 
+function evaluatePosition() {
+    const pieceValues = {
+        pawn: 1,
+        knight: 3,
+        bishop: 3,
+        rook: 5,
+        queen: 9,
+        king: 100
+    };
+
+    let score = 0;
+
+    for (let piece of pieces) {
+        let value = pieceValues[piece.type];
+
+        if (piece.color === "black") {
+            score += value;
+        }
+        if (piece.color === "white") {
+            score -= value;
+        }
+    }
+
+    return score;
+    // negative score = white(player) ahead || positive score = black(bot) ahead
+}
+
 
 function resetGame() {
     initBoard();
