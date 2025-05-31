@@ -6,6 +6,7 @@ let player1Name, player2Name;
 let gameMode = 'pvp';
 let canvasSize = 600;
 let squareSize;
+let possibleMoves = [];
 
 
 function setup() {
@@ -17,6 +18,7 @@ function setup() {
 }
 
 function draw() {
+    noStroke();
     background(255);
     drawBoard();
     drawPieces();
@@ -31,11 +33,24 @@ function drawBoard() {
                 selectedPiece.x === i &&
                 selectedPiece.y === j
             ) {
-                fill('#ffe066'); // Highlight color (light yellow)
+                if (board[i][j].color === '#f0d9b5')
+                    fill('#ffca75'); // Highlight color (light yellow)
+                else
+                    fill('#db9963');
             } else {
                 fill(board[i][j].color);
             }
             rect(i * squareSize, j * squareSize, squareSize, squareSize);
+
+            if (possibleMoves.some(m => m.x === i && m.y === j)) {
+                fill('#8f7d60');
+                // noStroke();
+                circle(
+                    i * squareSize + squareSize / 2,
+                    j * squareSize + squareSize / 2,
+                    squareSize / 4
+                )
+            }
         }
     }
 }
@@ -240,29 +255,39 @@ function mousePressed() {
     let y = Math.floor(mouseY / squareSize);
 
     if (selectedPiece) {
-
         if (selectedPiece.x !== x || selectedPiece.y !== y) {
             if (selectedPiece.canMove(x, y)) {
                 pieces = pieces.filter(p => !(p.x === x && p.y === y));
-
                 selectedPiece.x = x;
                 selectedPiece.y = y;
-
                 switchTurn();
             }
             selectedPiece = null;
+            possibleMoves = [];
         } else {
             selectedPiece = null;
+            possibleMoves = [];
         }
     } else {
         for (const piece of pieces) {
             if (piece.x === x && piece.y === y && piece.color === currentPlayer) {
                 selectedPiece = piece;
+                //compute possible moves
+                possibleMoves = [];
+                for (let i = 0; i < 8; i++) {
+                    for (let j = 0; j < 8; j++) {
+                        if (piece.canMove(i, j)) {
+                            possibleMoves.push({ x: i, y: j });
+                        }
+                    }
+                }
                 break;
             }
         }
     }
 }
+
+
 
 function resetGame() {
     initBoard();
