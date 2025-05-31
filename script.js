@@ -145,8 +145,28 @@ class Piece {
             }
             return false;
         }
+        //knight
+        if (this.type === 'knight') {
+            if ((Math.abs(dx) === 2 && Math.abs(dy) === 1) || (Math.abs(dx) === 1 && Math.abs(dy) === 2)) return true;
+            return false;
+        }
 
-
+        //bishop
+        if (this.type === 'bishop') {
+            if (Math.abs(dx) === Math.abs(dy)) {
+                let stepX = dx / Math.abs(dx);
+                let stepY = dy / Math.abs(dy);
+                let cx = this.x + stepX;
+                let cy = this.y + stepY;
+                while (cx !== toX || cy !== toY) {
+                    if (pieces.find(p => p.x === cx && p.y === cy)) return false;
+                    cx += stepX;
+                    cy += stepY;
+                }
+                return true;
+            }
+            return false;
+        }
 
     }
 }
