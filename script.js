@@ -168,6 +168,29 @@ class Piece {
             return false;
         }
 
+        //queen
+        if (this.type === 'queen') {
+            //combines rook and bishop
+            if (dx === 0 || dy === 0 || Math.abs(dx) === Math.abs(dy)) {
+                let stepX = dx === 0 ? 0 : dx / Math.abs(dx);
+                let stepY = dy === 0 ? 0 : dy / Math.abs(dy);
+                let cx = this.x + stepX;
+                let cy = this.y + stepY;
+                while (cx !== toX || cy !== toY) {
+                    if (pieces.find(p => p.x === cx && p.y === cy)) return false;
+                }
+                return true;
+            }
+            return false;
+        }
+
+        //king
+        if (this.type === 'king') {
+            if (Math.abs(dx) <= 1 && Math.abs(dy) <= 1) return true;
+            return false;
+        }
+        return false;
+
     }
 }
 
