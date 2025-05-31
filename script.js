@@ -126,8 +126,27 @@ class Piece {
             //capture
             if (Math.abs(dx) === 1 && dy === dir && destPiece && destPiece.color !== this.color) return true;
             return false;
-
         }
+
+        //rook
+        if (this.type === 'rook') {
+            if (dx === 0 || dy === 0) {
+                //check path is clear
+                let stepX = dx === 0 ? 0 : dx / Math.abs(dx);
+                let setpY = dy === 0 ? 0 : dy / Math.abs(dy);
+                let cx = this.x + stepX;
+                let cy = this.y + setpY;
+                while (cx !== toX || cy !== toY) {
+                    if (pieces.find(p => p.x === cx && p.y === cy)) return false;
+                    cx += stepX;
+                    cy += setpY;
+                }
+                return true;
+            }
+            return false;
+        }
+
+
 
     }
 }
