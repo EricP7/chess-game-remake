@@ -261,6 +261,22 @@ function switchTurn() {
             alert(currentPlayer + " is in check!");
         }
     }
+
+    if (gameMode === 'pvb' && currentPlayer === 'black') {
+        setTimeout(() => {
+            let botMove = getBestMove();
+
+            if (botMove) {
+                // remove captured pieces
+                pieces = pieces.filter(p => !(p.x === botMove.toX && p.y === botMove.toY));
+
+                botMove.piece.x = botMove.toX;
+                botMove.piece.y = botMove.toY;
+
+                switchTurn();
+            }
+        }, 1000);
+    }
 }
 
 function mousePressed() {
