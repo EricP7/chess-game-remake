@@ -8,6 +8,10 @@ let canvasSize = 600;
 let squareSize;
 let possibleMoves = [];
 
+let moveSound = new Audio("./Assets/SoundEffects/Move_Piece.wav");
+let captureSound = new Audio("./Assets/SoundEffects/Capture.wav")
+let checkSound = new Audio("./Assets/SoundEffects/Check.wav")
+
 
 function setup() {
     let canvas = createCanvas(canvasSize, canvasSize);
@@ -281,6 +285,7 @@ function switchTurn() {
         if (isCheckmate(currentPlayer)) {
             alert(currentPlayer + " is in checkmate! Game over.");
         } else {
+            checkSound.play()
             alert(currentPlayer + " is in check!");
         }
     }
@@ -312,9 +317,11 @@ function mousePressed() {
                 const captured = pieces.find(p => p.x === x && p.y === y);
                 if (captured) {
                     pieces.splice(pieces.indexOf(captured), 1);
+                    captureSound.play()
                 }
                 selectedPiece.x = x;
                 selectedPiece.y = y;
+                moveSound.play();
                 switchTurn();
             }
             selectedPiece = null;
@@ -530,6 +537,7 @@ function getBestMove() {
 
     for (let move of botMoves) {
         makeMove(move);
+        moveSound.play();
 
         let score = minimax(3, true);
 
