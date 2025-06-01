@@ -14,7 +14,9 @@ function setup() {
     canvas.parent("gameCanvas");
     squareSize = canvasSize / 8;
 
-    
+    document.getElementById('gameMode').addEventListener('change', handleGameModeChange);
+
+    handleGameModeChange();
 
     initBoard();
     initPieces();
@@ -450,9 +452,11 @@ function evaluatePosition() {
 }
 
 function makeMove(move) {
-    if (move.capturePiece) {
+    if (move.capturedPiece) { 
         let index = pieces.indexOf(move.capturedPiece);
-        pieces.splice(index, 1);
+        if (index > -1) { 
+            pieces.splice(index, 1);
+        }
     }
 
     move.piece.x = move.toX;
@@ -464,7 +468,7 @@ function undoMove(move) {
     move.piece.y = move.fromY;
 
     if (move.capturedPiece) {
-        pieces.push(capturedPiece);
+        pieces.push(move.capturedPiece);
     }
 }
 
@@ -481,7 +485,7 @@ function minimax(depth, isMaximizing, alpha = -Infinity, beta = Infinity) {
     }
 
     if (isMaximizing) {
-        let macEval = -Infinity;
+        let maxEval = -Infinity;
 
         for (let move of moves ) {
             makeMove(move);
