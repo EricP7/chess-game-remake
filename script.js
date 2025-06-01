@@ -479,6 +479,33 @@ function minimax(depth, isMaximizing, alpha = -Infinity, beta = Infinity) {
     }
 }
 
+function getBestMove() {
+    let bestMove = null;
+    let bestScore = -Infinity;
+
+    let botMoves = getAllLegalMoves('black');
+
+    console.log(`Bot considering ${botMoves.length} possible moves...`);
+
+    for (let move of botMoves) {
+        makeMove(move);
+
+        let score = minimax(3, true);
+
+        undoMove(move);
+
+        console.log(`Move ${move.piece.type} to (${move.toX},${move.toY}): score ${score}`);
+
+        if (score > bestScore) {
+            bestScore = score;
+            bestMove = move;
+        }
+    }
+
+    console.log(`Bot chose: ${bestMove.piece.type} to (${bestMove.toX},${bestMove.toY})`);
+    return bestMove;
+}
+
 function resetGame() {
     initBoard();
     initPieces();
