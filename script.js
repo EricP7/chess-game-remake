@@ -393,7 +393,8 @@ function isCheckmate(color) {
                     if (captured) pieces.splice(pieces.indexOf(captured), 1);
                     const stillInCheck = isInCheck(color);
                     // Undo move
-                    piece.x = oldX; piece.y = oldY;
+                    piece.x = oldX;
+                    piece.y = oldY;
                     if (captured) pieces.push(captured);
                     if (!stillInCheck) return false;
                 }
@@ -412,15 +413,22 @@ function getAllLegalMoves(color) {
         if (piece.color === color) {
             for (let x = 0; x < 8; x++) {
                 for (let y = 0; y < 8; y++) {
-                    if (piece.canMove(x,y)) {
-                        moves.push({
+                    if (piece.canMove(x, y)) {
+                        // Simulate the move
+                        let move = {
                             piece: piece,
                             fromX: piece.x,
                             fromY: piece.y,
                             toX: x,
                             toY: y,
                             capturedPiece: pieces.find(p => p.x === x && p.y === y)
-                        })
+                        };
+                        makeMove(move);
+                        const inCheck = isInCheck(color);
+                        undoMove(move);
+                        if (!inCheck) {
+                            moves.push(move);
+                        }
                     }
                 }
             }
@@ -459,9 +467,9 @@ function evaluatePosition() {
 }
 
 function makeMove(move) {
-    if (move.capturedPiece) { 
+    if (move.capturedPiece) {
         let index = pieces.indexOf(move.capturedPiece);
-        if (index > -1) { 
+        if (index > -1) {
             pieces.splice(index, 1);
         }
     }
@@ -494,7 +502,7 @@ function minimax(depth, isMaximizing, alpha = -Infinity, beta = Infinity) {
     if (isMaximizing) {
         let maxEval = -Infinity;
 
-        for (let move of moves ) {
+        for (let move of moves) {
             makeMove(move);
 
             let eval = minimax(depth - 1, false, alpha, beta);
