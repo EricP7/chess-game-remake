@@ -281,9 +281,13 @@ function simpleEngineMove() {
 
 function switchTurn() {
     currentPlayer = currentPlayer === 'white' ? 'black' : 'white';
+
+    const playerName = currentPlayer === 'white' ? player1Name : player2Name;
+    const winnderName = currentPlayer === 'white' ? player1Name : player2Name;
+
     if (isInCheck(currentPlayer)) {
         if (isCheckmate(currentPlayer)) {
-            alert(currentPlayer + " is in checkmate! Game over.");
+            alert(currentPlayer + " is in checkmate! " + winnderName + " wins! Game over.");
         } else {
             checkSound.play()
             alert(currentPlayer + " is in check!");
@@ -570,4 +574,7 @@ function resetGame() {
     selectedPiece = null;
     possibleMoves = [];
     console.log(getAllLegalMoves('black'))
+
+    player1Name = document.getElementById('player1').value || 'White';
+    player2Name = document.getElementById('player2').value || "Black";
 }
