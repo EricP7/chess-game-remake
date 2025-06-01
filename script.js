@@ -13,6 +13,9 @@ function setup() {
     let canvas = createCanvas(canvasSize, canvasSize);
     canvas.parent("gameCanvas");
     squareSize = canvasSize / 8;
+
+    
+
     initBoard();
     initPieces();
 }
@@ -52,6 +55,24 @@ function drawBoard() {
                 )
             }
         }
+    }
+}
+
+function handleGameModeChange() {
+    const selector = document.getElementById('gameMode');
+    gameMode = selector.value;
+
+    console.log('Game mode changed to:', gameMode);
+
+    resetGame();
+
+    const player2Input = document.getElementById('player2');
+    if (gameMode === 'pvb') {
+        player2Input.value = 'Bot';
+        player2Input.disabled = true;
+    } else {
+        player2Input.value = '';
+        player2Input.disabled = false;
     }
 }
 
