@@ -365,7 +365,7 @@ function getAllLegalMoves(color) {
     for (let piece of pieces) {
         if (piece.color === color) {
             for (let x = 0; x < 8; x++) {
-                for (let x = 0; y < 8; y++) {
+                for (let y = 0; y < 8; y++) {
                     if (piece.canMove(x,y)) {
                         moves.push({
                             piece: piece,
@@ -380,6 +380,8 @@ function getAllLegalMoves(color) {
             }
         }
     }
+
+    return moves;
 }
 
 
@@ -429,10 +431,59 @@ function undoMove(move) {
     }
 }
 
+function minimax(depth, isMaximizing, alpha = -Infinity, beta = Infinity) {
+    if (depth === 0) {
+        return evaluatePosition();
+    }
+
+    let currentColor = isMaximizing ? 'white' : 'black';
+    let moves = getAllLegalMoves(currentColor);
+
+    if (moves.length === 0) {
+        return isMaximizing ? -10000 : 10000;
+    }
+
+    if (isMaximizing) {
+        let macEval = -Infinity;
+
+        for (let move of moves ) {
+            makeMove(move);
+
+            let eval = minimax(depth - 1, false, alpha, beta);
+
+            undoMove(move);
+
+            maxEval = Math.max(maxEval, eval);
+
+            alpha = Math.max(alpha, eval);
+            if (beta <= alpha) break;
+        }
+
+        return maxEval;
+    } else {
+        let minEval = Infinity;
+
+        for (let move of moves) {
+            makeMove(move);
+
+            let eval = minimax(depth - 1, true, alpha, beta);
+
+            undoMove(move);
+
+            minEval = Math.min(minEval, eval);
+
+            beta = Math.min(minEval, eval);
+            if (beta <= alpha) break;
+        }
+        return minEval;
+    }
+}
+
 function resetGame() {
     initBoard();
     initPieces();
     currentPlayer = 'white';
     selectedPiece = null;
     possibleMoves = [];
+    console.log(getAllLegalMoves('black'))
 }
